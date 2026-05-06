@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Belize Tourism Arrivals — CMPS2212</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <!-- Ambient background glow -->
+  <div class="ambient-glow"></div>
+  
+  <header class="app-header">
+    <div class="eyebrow-badge">Interactive Data Explorer</div>
+    <h1 class="app-title">Belize <span class="accent">Tourism</span> Arrivals</h1>
+    <p class="app-subtitle">Explore visitor arrivals data by country, district, and purpose. Filter, sort, and analyze tourism trends from 2021 to 2025.</p>
+  </header>
+
+  <main class="app-main">
+    <!--
+      CONTROLS PANEL
+      The UI layer wires these inputs to the DataService. Every change
+      to any control triggers a single `view:changed` event from the
+      service. The UI never filters the data itself.
+    -->
+    <section class="controls" aria-label="Table controls">
+      <div class="control" data-label="Search">
+        <label for="search">Country Search</label>
+        <input
+          type="search"
+          id="search"
+          data-role="search"
+          placeholder="Search countries..."
+          autocomplete="off"
+          spellcheck="false"
+        />
+      </div>
+
+      <div class="control" data-label="Filter">
+        <label for="filter-district">District</label>
+        <select id="filter-district" data-role="filter-district">
+          <option value="">All Districts</option>
+          <option value="Belize">Belize</option>
+          <option value="Cayo">Cayo</option>
+          <option value="Corozal">Corozal</option>
+          <option value="Orange Walk">Orange Walk</option>
+          <option value="Stann Creek">Stann Creek</option>
+          <option value="Toledo">Toledo</option>
+        </select>
+      </div>
+
+      <div class="control" data-label="Filter">
+        <label for="filter-purpose">Purpose</label>
+        <select id="filter-purpose" data-role="filter-purpose">
+          <option value="">All Purposes</option>
+          <option value="Leisure">Leisure</option>
+          <option value="Business">Business</option>
+          <option value="Family Visit">Family Visit</option>
+          <option value="Conference">Conference</option>
+          <option value="Education">Education</option>
+        </select>
+      </div>
+
+      <div class="control" data-label="Filter">
+        <label for="filter-year">Year</label>
+        <select id="filter-year" data-role="filter-year">
+          <option value="">All Years</option>
+          <option value="2021">2021</option>
+          <option value="2022">2022</option>
+          <option value="2023">2023</option>
+          <option value="2024">2024</option>
+          <option value="2025">2025</option>
+        </select>
+      </div>
+
+      <button type="button" class="btn-reset" data-role="reset">
+        Reset Filters
+      </button>
+    </section>
+
+    <!-- Status bar — rendered by UI from view:changed payload -->
+    <div class="status-bar" data-role="status">
+      <svg class="status-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 6v6l4 2"/>
+      </svg>
+      <span data-role="status-text">Loading tourism data…</span>
+    </div>
+
+    <!--
+      TABLE
+      Headers with data-sort-column are clickable to toggle sorting.
+      The tbody is populated by the UI layer on each view:changed event.
+    -->
+    <section class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th data-sort-column="year" data-role="sort-header">
+              <span class="th-content">Year</span>
+            </th>
+            <th data-sort-column="month" data-role="sort-header">
+              <span class="th-content">Month</span>
+            </th>
+            <th data-sort-column="country" data-role="sort-header">
+              <span class="th-content">Country</span>
+            </th>
+            <th data-sort-column="district" data-role="sort-header">
+              <span class="th-content">District</span>
+            </th>
+            <th data-sort-column="purpose" data-role="sort-header">
+              <span class="th-content">Purpose</span>
+            </th>
+            <th data-sort-column="arrivals" data-role="sort-header" class="num">
+              <span class="th-content">Arrivals</span>
+            </th>
+            <th data-sort-column="avgStayNights" data-role="sort-header" class="num">
+              <span class="th-content">Avg Stay (nights)</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody data-role="tbody">
+          <!-- UI layer populates rows here -->
+        </tbody>
+      </table>
+    </section>
+
+    <!-- PAGINATION — UI layer renders current page info and enables/disables nav -->
+    <nav class="pagination" aria-label="Pagination navigation" data-role="pagination">
+      <button type="button" data-role="page-first" aria-label="Go to first page" title="First page">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="11 17 6 12 11 7"/>
+          <polyline points="18 17 13 12 18 7"/>
+        </svg>
+      </button>
+      <button type="button" data-role="page-prev" aria-label="Go to previous page" title="Previous page">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+      <span class="page-info" data-role="page-info" aria-live="polite">Page 1 of 1</span>
+      <button type="button" data-role="page-next" aria-label="Go to next page" title="Next page">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </button>
+      <button type="button" data-role="page-last" aria-label="Go to last page" title="Last page">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="13 17 18 12 13 7"/>
+          <polyline points="6 17 11 12 6 7"/>
+        </svg>
+      </button>
+    </nav>
+
+    <!--
+      EXTRA CREDIT: Row detail modal.
+      Hidden by default. UI layer toggles .is-visible on 'row:selected'
+      and removes it on 'row:deselected'. Populates the fields below
+      from the row payload.
+    -->
+    <div
+      class="row-detail"
+      data-role="row-detail"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="detail-title"
+      aria-hidden="true"
+    >
+      <div class="row-detail-panel">
+        <header class="row-detail-header">
+          <h2 id="detail-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 8px;">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+            Arrival Details
+          </h2>
+          <button
+            type="button"
+            class="row-detail-close"
+            data-role="detail-close"
+            aria-label="Close details panel"
+          >×</button>
+        </header>
+        <dl class="row-detail-body">
+          <dt>Record ID</dt>     <dd data-role="detail-id"></dd>
+          <dt>Year</dt>          <dd data-role="detail-year"></dd>
+          <dt>Month</dt>         <dd data-role="detail-month"></dd>
+          <dt>Country</dt>       <dd data-role="detail-country"></dd>
+          <dt>District</dt>      <dd data-role="detail-district"></dd>
+          <dt>Purpose</dt>       <dd data-role="detail-purpose"></dd>
+          <dt>Total Arrivals</dt><dd data-role="detail-arrivals"></dd>
+          <dt>Avg Stay</dt>      <dd data-role="detail-stay"></dd>
+        </dl>
+      </div>
+    </div>
+  </main>
+
+  <footer class="app-footer">
+    <p>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: text-bottom; margin-right: 6px;">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+      </svg>
+      CMPS2212 · University of Belize · Observer Pattern Final Project
+    </p>
+  </footer>
+</body>
+</html>
